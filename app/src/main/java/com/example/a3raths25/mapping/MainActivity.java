@@ -33,10 +33,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     }
         public void onClick(View view)
         {
-            EditText lon = (EditText)findViewById(R.id.et1);
-            EditText lat = (EditText)findViewById(R.id.et2);
+            EditText lon = (EditText)findViewById(R.id.et2);
+            EditText lat = (EditText)findViewById(R.id.et1);
             double latci=Double.parseDouble(lat.getText().toString());
             double lonci= Double.parseDouble(lon.getText().toString());
+            mv.getController().setCenter(new GeoPoint(latci,lonci));
         }
     }
 
