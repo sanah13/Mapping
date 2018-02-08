@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Mapping</string>
     <string name="GoBtn"></string>
+    <string name="choosemap"></string>
+    <string name= "regularview"></string>
+    <string name= "hikebikemapview"></string>
+    <string name="selectmap"></string>
 </resources>
