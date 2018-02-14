@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="lat"
+        android:defaultValue="50.9"
+        android:title="Latitude"
+        android:summary="Latitude to show the map at initially." />
+    <EditTextPreference
+        android:defaultValue="-1.4"
+        android:key="lon"
+        android:summary="Longitude to show the map at initially."
+        android:title="Longitude" />
+    <CheckBoxPreference
+        android:key="autodownload"
+        android:defaultValue="true"
+        android:title="Auto-download"
+        android:summary="Auto-download data about surrounding cinemas?" />
+</PreferenceScreen>

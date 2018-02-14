@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Mapping</string>
-    <string name="GoBtn"></string>
-    <string name="choosemap"></string>
-    <string name= "regularview"></string>
-    <string name= "hikebikemapview"></string>
+    <string name="GoBtn">Go</string>
+    <string name="choosemap">Choose Map</string>
+    <string name= "regularview">regular map view</string>
+    <string name= "hikebikemapview">hike bike map view</string>
     <string name="selectmap"></string>
+    <string name="preferences">Preferences</string>
 </resources>
