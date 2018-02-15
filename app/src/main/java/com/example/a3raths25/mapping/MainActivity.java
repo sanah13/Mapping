@@ -19,8 +19,6 @@ import org.osmdroid.views.MapView;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     MapView mv;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         Button button = (Button) findViewById(R.id.btn1);
         button.setOnClickListener(this);
     }
-
     public void onClick(View view) {
         EditText lon = (EditText) findViewById(R.id.et2);
         EditText lat = (EditText) findViewById(R.id.et1);
@@ -41,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         double lonci = Double.parseDouble(lon.getText().toString());
         mv.getController().setCenter(new GeoPoint(latci, lonci));
     }
-
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -64,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         }
         return false;
     }
-
-
     protected void onActivityResult(int requestCode, int resultCode,Intent intent)
     {
             if(requestCode==0)
@@ -91,10 +85,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         double lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
         double lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
-
-    }
-
-
+        mv.getController().setCenter(new GeoPoint(lat,lon));
+        int zoomLevel = Integer.parseInt ( prefs.getString("zoomLevel","15"));
+        mv.getController().setZoom(zoomLevel);
     }
 
 

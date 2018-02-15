@@ -10,6 +10,11 @@
         android:key="lon"
         android:summary="Longitude to show the map at initially."
         android:title="Longitude" />
+    <EditTextPreference
+        android:defaultValue="15"
+        android:key="zoomLevel"
+        android:summary="set the zoom level"
+        android:title="zoomLevel"/>
     <CheckBoxPreference
         android:key="autodownload"
         android:defaultValue="true"
