@@ -19,10 +19,8 @@ public class SetLocationActivity extends AppCompatActivity implements View.OnCli
         Button go_button = (Button) findViewById(R.id.btnGo);
         go_button.setOnClickListener(this);
     }
-
     @Override
     public void onClick(View v) {
-
         // retrieve latitude and longitude
         EditText lat=(EditText)findViewById(R.id.lat);
         double lat_value = Double.parseDouble(lat.getText().toString());
@@ -38,6 +36,5 @@ public class SetLocationActivity extends AppCompatActivity implements View.OnCli
         intent.putExtras(bundle);
         setResult(RESULT_OK,intent);
         finish();
-
     }
 }
