@@ -12,6 +12,8 @@ import android.view.View.OnClickListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -55,6 +57,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         if(item.getItemId() == R.id.preferences)
         {
             Intent intent = new Intent(this,MyPrefsActivity.class);
+            startActivityForResult(intent,2);
+            return true;
+        }
+        if(item.getItemId() == R.id.setlocation)
+        {
+            Intent intent = new Intent(this,SetLocationActivity.class);
             startActivityForResult(intent,1);
             return true;
         }
@@ -76,6 +84,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     {
                         mv.setTileSource(TileSourceFactory.MAPNIK);
                     }
+                }
+            }
+            else if (requestCode==1){
+                if (resultCode==RESULT_OK){
+                    Bundle extras=intent.getExtras();
+                    double latitude=extras.getDouble("lat");
+                    double longitude=extras.getDouble("lon");
+                    mv.getController().setCenter(new GeoPoint(latitude, longitude));
                 }
             }
         }
