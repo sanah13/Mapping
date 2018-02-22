@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,8 @@ import org.osmdroid.views.MapView;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     MapView mv;
+    boolean doNotReadPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     }
     protected void onActivityResult(int requestCode, int resultCode,Intent intent)
     {
+        doNotReadPreferences = false;
+
             if(requestCode==0)
             {
                 if (resultCode==RESULT_OK)
@@ -92,20 +97,33 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     double latitude=extras.getDouble("lat");
                     double longitude=extras.getDouble("lon");
                     mv.getController().setCenter(new GeoPoint(latitude, longitude));
+                    Log.d("mapping", "latitude=" +latitude + " longitude " + longitude);
+                    doNotReadPreferences = true;
                 }
             }
         }
-    public void onStart()
+    public void onResume()
     {
-        super.onStart();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        double lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
-        double lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
-        mv.getController().setCenter(new GeoPoint(lat,lon));
-        int zoomLevel = Integer.parseInt ( prefs.getString("zoomLevel","15"));
-        mv.getController().setZoom(zoomLevel);
-    }
+        super.onResume();
+        if (doNotReadPreferences==false) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            double lat = Double.parseDouble(prefs.getString("lat", "50.9"));
+            double lon = Double.parseDouble(prefs.getString("lon", "-1.4"));
+            mv.getController().setCenter(new GeoPoint(lat, lon));
+            int zoomLevel = Integer.parseInt(prefs.getString("zoomLevel", "15"));
+            mv.getController().setZoom(zoomLevel);
+            String mapType= prefs.getString("mapType","RMV");
 
+        }
+    }
+    public void onDestroy()
+    {
+        super.onDestroy();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor= prefs.edit();
+
+
+    }
 
 }
 

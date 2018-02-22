@@ -14,10 +14,15 @@
         android:defaultValue="15"
         android:key="zoomLevel"
         android:summary="set the zoom level"
-        android:title="zoomLevel"/>
+        android:title="ZoomLevel"/>
     <CheckBoxPreference
         android:key="autodownload"
         android:defaultValue="true"
         android:title="Auto-download"
         android:summary="Auto-download data about surrounding cinemas?" />
+    <ListPreference
+        android:key="mapType"
+        android:title="MapType"
+        android:entries="@array/mapType"
+        android:entryValues="@array/mapTypeCodes" />
 </PreferenceScreen>
