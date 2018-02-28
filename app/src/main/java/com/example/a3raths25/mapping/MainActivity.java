@@ -57,51 +57,57 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             return true;
 
         }
-        if(item.getItemId() == R.id.preferences)
-        {
-            Intent intent = new Intent(this,MyPrefsActivity.class);
-            startActivityForResult(intent,2);
-            return true;
-        }
         if(item.getItemId() == R.id.setlocation)
         {
             Intent intent = new Intent(this,SetLocationActivity.class);
             startActivityForResult(intent,1);
             return true;
         }
+        if(item.getItemId() == R.id.preferences)
+        {
+            Intent intent = new Intent(this,MyPrefsActivity.class);
+            startActivityForResult(intent,2);
+            return true;
+        }
         return false;
     }
-    protected void onActivityResult(int requestCode, int resultCode,Intent intent)
-    {
+    protected void onActivityResult(int requestCode, int resultCode,Intent intent) {
         doNotReadPreferences = false;
 
-            if(requestCode==0)
-            {
-                if (resultCode==RESULT_OK)
-                {
-                    Bundle extras=intent.getExtras();
-                    boolean hikebikemap = extras.getBoolean("com.example.hikebikemap");
-                    if(hikebikemap==true)
-                    {
-                        mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
-                    }
-                    else
-                    {
-                        mv.setTileSource(TileSourceFactory.MAPNIK);
-                    }
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = intent.getExtras();
+                boolean hikebikemap = extras.getBoolean("com.example.hikebikemap");
+                if (hikebikemap == true) {
+                    mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+                } else {
+                    mv.setTileSource(TileSourceFactory.MAPNIK);
                 }
             }
-            else if (requestCode==1){
-                if (resultCode==RESULT_OK){
-                    Bundle extras=intent.getExtras();
-                    double latitude=extras.getDouble("lat");
-                    double longitude=extras.getDouble("lon");
-                    mv.getController().setCenter(new GeoPoint(latitude, longitude));
-                    Log.d("mapping", "latitude=" +latitude + " longitude " + longitude);
-                    doNotReadPreferences = true;
-                }
+        } else if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = intent.getExtras();
+                double latitude = extras.getDouble("lat");
+                double longitude = extras.getDouble("lon");
+                mv.getController().setCenter(new GeoPoint(latitude, longitude));
+                Log.d("mapping", "latitude=" + latitude + " longitude " + longitude);
+                doNotReadPreferences = true;
             }
+        } else if (requestCode == 2) {
+            if (resultCode == RESULT_OK) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+                String mapType = prefs.getString("mapType", "RMV");
+                if (mapType.equals("RMV")) {
+                    mv.setTileSource(TileSourceFactory.MAPNIK);
+                } else {
+                    mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+                }
+
+            }
+
         }
+    }
     public void onResume()
     {
         super.onResume();
@@ -114,16 +120,27 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             mv.getController().setZoom(zoomLevel);
             String mapType= prefs.getString("mapType","RMV");
 
+            if (mapType.equals("RMV")) {
+                mv.setTileSource(TileSourceFactory.MAPNIK);
+            } else {
+                mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+            }
         }
     }
+    public void onSaveInstanceState (Bundle savedInstanceState) {
+    }
+
     public void onDestroy()
     {
         super.onDestroy();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor= prefs.edit();
-
+        String mapType= prefs.getString("mapType","RMV");
+        editor.putString("mapType", mapType);
+        editor.commit();
+        }
 
     }
 
-}
+
 

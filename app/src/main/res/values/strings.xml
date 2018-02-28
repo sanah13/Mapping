@@ -6,4 +6,5 @@
     <string name= "hikebikemapview">hike bike map view</string>
     <string name="selectmap"></string>
     <string name="preferences">Preferences</string>
+    <string name="mapType">mapType</string>
 </resources>
