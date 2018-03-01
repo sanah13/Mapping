@@ -1,5 +1,4 @@
 package com.example.a3raths25.mapping;
-
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
@@ -19,11 +18,9 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     MapView mv;
     boolean doNotReadPreferences;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             Intent intent = new Intent(this,MapChooseActivity.class);
             startActivityForResult(intent,0);
             return true;
-
         }
         if(item.getItemId() == R.id.setlocation)
         {
@@ -67,6 +63,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         {
             Intent intent = new Intent(this,MyPrefsActivity.class);
             startActivityForResult(intent,2);
+            return true;
+        }
+
+        if(item.getItemId() == R.id.MapChooseList)
+        {
+            Intent intent = new Intent (this,MapChooseListActivity.class);
+            startActivityForResult(intent,3);
             return true;
         }
         return false;
@@ -103,9 +106,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 } else {
                     mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
                 }
-
             }
-
         }
     }
     public void onResume()
@@ -129,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     }
     public void onSaveInstanceState (Bundle savedInstanceState) {
     }
-
     public void onDestroy()
     {
         super.onDestroy();
@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         editor.putString("mapType", mapType);
         editor.commit();
         }
-
     }
 
 

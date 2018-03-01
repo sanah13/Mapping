@@ -9,4 +9,7 @@
     <item
         android:id="@+id/setlocation"
         android:title="Set Location"/>
+    <item
+        android:id="@+id/MapChooseList"
+        android:title="ChooseMapList"/>
 </menu>
