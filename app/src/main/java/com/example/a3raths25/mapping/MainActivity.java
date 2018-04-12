@@ -33,6 +33,7 @@ import android.widget.Toast;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener, LocationListener {
@@ -54,18 +55,29 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         LocationManager mgr=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
         mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
 
-
         items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
-        BufferedReader reader = new BufferedReader(new FileReader("poi.csv"));
-        String line;
-        while((line= reader.readline()) !=null)
-        {
-            String[] components = line.split(",");
-            if(components.length==4)
-            {
-                OverlayItem pointOfInterest = new OverlayItem (components[0] ,components[1] , new GeoPoint(components[4],components[3]));
-                items.addItem(pointOfInterest);
-            }
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("poi.txt"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] components = line.split(",");
+                if (components.length == 4) {
+
+                    try {
+                        double lat = Double.parseDouble(components[4]);
+                        double lon = Double.parseDouble(components[3]);
+
+                        OverlayItem pointOfInterest = new OverlayItem(components[0], components[1], new GeoPoint(lat, lon));
+                        items.addItem(pointOfInterest);
+                    }
+                    catch(NumberFormatException e){
+                        System.out.println("error parsing file" + e);
+                    }
+                    }
+                }
+        }
+        catch(IOException e) {
+            e.printStackTrace();
         }
         mv.getOverlays().add(items);
 
