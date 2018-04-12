@@ -1,4 +1,5 @@
 package com.example.a3raths25.mapping;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
@@ -18,8 +19,25 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-public class MainActivity extends AppCompatActivity implements OnClickListener {
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.location.LocationManager;
+import android.location.LocationListener;
+import android.location.Location;
+import android.content.Context;
+import android.widget.Toast;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements OnClickListener, LocationListener {
     MapView mv;
+    ItemizedIconOverlay<OverlayItem>items;
     boolean doNotReadPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +50,27 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         mv.getController().setCenter(new GeoPoint(51.05, -0.72));
         Button button = (Button) findViewById(R.id.btn1);
         button.setOnClickListener(this);
+
+        LocationManager mgr=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+
+
+        items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
+        BufferedReader reader = new BufferedReader(new FileReader("poi.csv"));
+        String line;
+        while((line= reader.readline()) !=null)
+        {
+            String[] components = line.split(",");
+            if(components.length==4)
+            {
+                OverlayItem pointOfInterest = new OverlayItem (components[0] ,components[1] , new GeoPoint(components[4],components[3]));
+                items.addItem(pointOfInterest);
+            }
+        }
+        mv.getOverlays().add(items);
+
+        ////OverlayItem Luton= new OverlayItem("Luton", "town in Bedfordshire", new GeoPoint(51.878,-0.419));
+        ////items.addItem(Luton);
     }
     public void onClick(View view) {
         EditText lon = (EditText) findViewById(R.id.et2);
@@ -138,8 +177,37 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         String mapType= prefs.getString("mapType","RMV");
         editor.putString("mapType", mapType);
         editor.commit();
-        }
     }
+
+    public void onLocationChanged(Location newLoc)
+    {
+        Toast.makeText
+                (this, "Location=" +
+                        newLoc.getLatitude()+ " " +
+                        newLoc.getLongitude() , Toast.LENGTH_LONG).show();
+    }
+    public void onProviderDisabled(String provider)
+    {
+        Toast.makeText(this, "Provider " + provider +
+                " disabled", Toast.LENGTH_LONG).show();
+    }
+    public void onProviderEnabled(String provider)
+    {
+        Toast.makeText(this, "Provider " + provider +
+                " enabled", Toast.LENGTH_LONG).show();
+    }
+    public void onStatusChanged(String provider,int status,Bundle extras)
+    {
+
+        Toast.makeText(this, "Status changed: " + status,
+                Toast.LENGTH_LONG).show();
+    }
+}
+
+
+
+
+
 
 
 
