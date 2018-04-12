@@ -52,13 +52,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         Button button = (Button) findViewById(R.id.btn1);
         button.setOnClickListener(this);
 
-        LocationManager mgr=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+        LocationManager mgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
         items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
+        BufferedReader reader = null;
+        String line;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("poi.txt"));
-            String line;
+            reader = new BufferedReader(new FileReader("poi.txt"));
             while ((line = reader.readLine()) != null) {
                 String[] components = line.split(",");
                 if (components.length == 4) {
@@ -69,20 +70,25 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
                         OverlayItem pointOfInterest = new OverlayItem(components[0], components[1], new GeoPoint(lat, lon));
                         items.addItem(pointOfInterest);
-                    }
-                    catch(NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         System.out.println("error parsing file" + e);
                     }
-                    }
                 }
-        }
-        catch(IOException e) {
+            }
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        mv.getOverlays().add(items);
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mv.getOverlays().add(items);
 
-        ////OverlayItem Luton= new OverlayItem("Luton", "town in Bedfordshire", new GeoPoint(51.878,-0.419));
-        ////items.addItem(Luton);
+            ////OverlayItem Luton= new OverlayItem("Luton", "town in Bedfordshire", new GeoPoint(51.878,-0.419));
+            ////items.addItem(Luton);
+        }
     }
     public void onClick(View view) {
         EditText lon = (EditText) findViewById(R.id.et2);
