@@ -1,6 +1,8 @@
 package com.example.a3raths25.mapping;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,14 +34,16 @@ import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener, LocationListener {
     MapView mv;
-    ItemizedIconOverlay<OverlayItem>items;
+    ItemizedIconOverlay<OverlayItem> items;
     boolean doNotReadPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,17 +63,23 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         BufferedReader reader = null;
         String line;
         try {
-            reader = new BufferedReader(new FileReader("poi.txt"));
+            String filepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/poi.txt";
+            File file = new File(filepath);
+            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ file path="+file.getAbsolutePath());
+            reader = new BufferedReader(new FileReader(filepath));
             while ((line = reader.readLine()) != null) {
                 String[] components = line.split(",");
-                if (components.length == 4) {
+                System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ line=" + line);
+                if (components.length == 5) {
 
                     try {
-                        double lat = Double.parseDouble(components[4]);
-                        double lon = Double.parseDouble(components[3]);
-
-                        OverlayItem pointOfInterest = new OverlayItem(components[0], components[1], new GeoPoint(lat, lon));
+                        ////Charlie Chans,restaurant,A very interesting place,-1.39916,50.8983
+                        double lon = Double.parseDouble(components[4]);
+                        double lat = Double.parseDouble(components[3]);
+                        System.out.println("$$$ trying to parse line=" + line + "lat=" +lat+ " lon="+lon);
+                        OverlayItem pointOfInterest = new OverlayItem(components[0], components[1], new GeoPoint(lon,lat));
                         items.addItem(pointOfInterest);
+
                     } catch (NumberFormatException e) {
                         System.out.println("error parsing file" + e);
                     }
@@ -84,12 +94,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            mv.getOverlays().add(items);
-
-            ////OverlayItem Luton= new OverlayItem("Luton", "town in Bedfordshire", new GeoPoint(51.878,-0.419));
-            ////items.addItem(Luton);
         }
+
+        mv.getOverlays().add(items);
     }
+
     public void onClick(View view) {
         EditText lon = (EditText) findViewById(R.id.et2);
         EditText lat = (EditText) findViewById(R.id.et1);
@@ -97,41 +106,39 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         double lonci = Double.parseDouble(lon.getText().toString());
         mv.getController().setCenter(new GeoPoint(latci, lonci));
     }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        if(item.getItemId() == R.id.choosemap)
-        {
-            Intent intent = new Intent(this,MapChooseActivity.class);
-            startActivityForResult(intent,0);
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.choosemap) {
+            Intent intent = new Intent(this, MapChooseActivity.class);
+            startActivityForResult(intent, 0);
             return true;
         }
-        if(item.getItemId() == R.id.setlocation)
-        {
-            Intent intent = new Intent(this,SetLocationActivity.class);
-            startActivityForResult(intent,1);
+        if (item.getItemId() == R.id.setlocation) {
+            Intent intent = new Intent(this, SetLocationActivity.class);
+            startActivityForResult(intent, 1);
             return true;
         }
-        if(item.getItemId() == R.id.preferences)
-        {
-            Intent intent = new Intent(this,MyPrefsActivity.class);
-            startActivityForResult(intent,2);
+        if (item.getItemId() == R.id.preferences) {
+            Intent intent = new Intent(this, MyPrefsActivity.class);
+            startActivityForResult(intent, 2);
             return true;
         }
 
-        if(item.getItemId() == R.id.MapChooseList)
-        {
-            Intent intent = new Intent (this,MapChooseListActivity.class);
-            startActivityForResult(intent,3);
+        if (item.getItemId() == R.id.MapChooseList) {
+            Intent intent = new Intent(this, MapChooseListActivity.class);
+            startActivityForResult(intent, 3);
             return true;
         }
         return false;
     }
-    protected void onActivityResult(int requestCode, int resultCode,Intent intent) {
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         doNotReadPreferences = false;
 
         if (requestCode == 0) {
@@ -166,17 +173,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             }
         }
     }
-    public void onResume()
-    {
+
+    public void onResume() {
         super.onResume();
-        if (doNotReadPreferences==false) {
+        if (doNotReadPreferences == false) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             double lat = Double.parseDouble(prefs.getString("lat", "50.9"));
             double lon = Double.parseDouble(prefs.getString("lon", "-1.4"));
             mv.getController().setCenter(new GeoPoint(lat, lon));
             int zoomLevel = Integer.parseInt(prefs.getString("zoomLevel", "15"));
             mv.getController().setZoom(zoomLevel);
-            String mapType= prefs.getString("mapType","RMV");
+            String mapType = prefs.getString("mapType", "RMV");
 
             if (mapType.equals("RMV")) {
                 mv.setTileSource(TileSourceFactory.MAPNIK);
@@ -185,37 +192,37 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             }
         }
     }
-    public void onSaveInstanceState (Bundle savedInstanceState) {
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
     }
-    public void onDestroy()
-    {
+
+    public void onDestroy() {
         super.onDestroy();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor= prefs.edit();
-        String mapType= prefs.getString("mapType","RMV");
+        SharedPreferences.Editor editor = prefs.edit();
+        String mapType = prefs.getString("mapType", "RMV");
         editor.putString("mapType", mapType);
         editor.commit();
     }
 
-    public void onLocationChanged(Location newLoc)
-    {
+    public void onLocationChanged(Location newLoc) {
         Toast.makeText
                 (this, "Location=" +
-                        newLoc.getLatitude()+ " " +
-                        newLoc.getLongitude() , Toast.LENGTH_LONG).show();
+                        newLoc.getLatitude() + " " +
+                        newLoc.getLongitude(), Toast.LENGTH_LONG).show();
     }
-    public void onProviderDisabled(String provider)
-    {
+
+    public void onProviderDisabled(String provider) {
         Toast.makeText(this, "Provider " + provider +
                 " disabled", Toast.LENGTH_LONG).show();
     }
-    public void onProviderEnabled(String provider)
-    {
+
+    public void onProviderEnabled(String provider) {
         Toast.makeText(this, "Provider " + provider +
                 " enabled", Toast.LENGTH_LONG).show();
     }
-    public void onStatusChanged(String provider,int status,Bundle extras)
-    {
+
+    public void onStatusChanged(String provider, int status, Bundle extras) {
 
         Toast.makeText(this, "Status changed: " + status,
                 Toast.LENGTH_LONG).show();
