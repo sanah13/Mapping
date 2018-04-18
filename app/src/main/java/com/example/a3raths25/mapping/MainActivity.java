@@ -42,6 +42,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements OnClickListener, LocationListener {
     MapView mv;
     ItemizedIconOverlay<OverlayItem> items;
+    ItemizedIconOverlay.OnItemGestureListener<OverlayItem> markerGestureListener;
     boolean doNotReadPreferences;
 
     @Override
@@ -52,28 +53,42 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         mv = (MapView) findViewById(R.id.map1);
         mv.setBuiltInZoomControls(true);
         mv.getController().setZoom(16);
-        mv.getController().setCenter(new GeoPoint(51.05, -0.72));
+        mv = (MapView) findViewById(R.id.map1);
+        mv.setBuiltInZoomControls(true);
+        mv.getController().setZoom(16);
         Button button = (Button) findViewById(R.id.btn1);
         button.setOnClickListener(this);
+
+        markerGestureListener= new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>()
+        {
+            public boolean onItemLongPress(int i, OverlayItem item)
+            {
+                Toast.makeText(MainActivity.this, item.getSnippet(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            public boolean onItemSingleTapUp(int i, OverlayItem item)
+            {
+                Toast.makeText(MainActivity.this, item.getSnippet(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        };
 
         LocationManager mgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
-        items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
+        items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), markerGestureListener);
         BufferedReader reader = null;
         String line;
         try {
             String filepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/poi.txt";
             File file = new File(filepath);
-            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ file path="+file.getAbsolutePath());
             reader = new BufferedReader(new FileReader(filepath));
             while ((line = reader.readLine()) != null) {
                 String[] components = line.split(",");
-                System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ line=" + line);
                 if (components.length == 5) {
 
                     try {
-                        ////Charlie Chans,restaurant,A very interesting place,-1.39916,50.8983
                         double lon = Double.parseDouble(components[4]);
                         double lat = Double.parseDouble(components[3]);
                         System.out.println("$$$ trying to parse line=" + line + "lat=" +lat+ " lon="+lon);
@@ -210,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 (this, "Location=" +
                         newLoc.getLatitude() + " " +
                         newLoc.getLongitude(), Toast.LENGTH_LONG).show();
+        mv.getController().setCenter(new GeoPoint(newLoc.getLatitude(), newLoc.getLongitude()));
     }
 
     public void onProviderDisabled(String provider) {
